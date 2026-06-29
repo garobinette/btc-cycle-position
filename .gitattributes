@@ -1,0 +1,21 @@
+# Normalize line endings automatically
+* text=auto
+
+# Source and text files use LF
+*.py   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.cfg  text eol=lf
+*.ini  text eol=lf
+*.toml text eol=lf
+
+# Windows batch scripts must stay CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Treat these as binary — no diffs, no EOL conversion
+*.xlsx binary
+*.xls  binary
+*.png  binary
+*.jpg  binary
+*.zip  binary
