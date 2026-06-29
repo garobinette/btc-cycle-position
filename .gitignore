@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Project artifacts
+output/*.xlsx
+output/*.png
+
+# Keep your real price data out of git (often licensed, e.g. Bloomberg)
+data/*.xlsx
+data/*.csv
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
