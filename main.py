@@ -12,8 +12,11 @@ from src import excel_writer, plotting
 
 
 def run():
-    # 1. Load
+    # 1. Load price data, then attach MVRV if a separate file is configured
+    #    (if MVRV lives as a column in the main file, the loader already has it).
     df = data_loader.load_price_data()
+    mvrv = data_loader.load_mvrv_file()
+    df = data_loader.attach_mvrv(df, mvrv)
 
     # 2. Independent clocks
     time_df = time_clock.compute_time_clock(df)

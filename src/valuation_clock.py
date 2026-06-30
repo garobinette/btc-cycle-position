@@ -41,6 +41,11 @@ def compute_indicators(df: pd.DataFrame) -> pd.DataFrame:
     sma_350 = close.rolling(350, min_periods=350).mean()
     out["pi_cycle_ratio"] = sma_111 / (2.0 * sma_350)
 
+    # MVRV is supplied as data (not derived from price). It's already a ratio,
+    # so it passes straight through to heat-scaling if the column is present.
+    if "mvrv" in df.columns:
+        out["mvrv"] = df["mvrv"]
+
     return out
 
 

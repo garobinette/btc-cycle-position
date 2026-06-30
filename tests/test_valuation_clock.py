@@ -48,3 +48,20 @@ def test_valuation_heat_bounded():
     out = vc.compute_valuation_clock(df)
     v = out["valuation_heat"].dropna()
     assert (v >= 0).all() and (v <= 100).all()
+
+
+def test_mvrv_flows_through_when_present():
+    df = _ramp()
+    df["mvrv"] = np.linspace(0.8, 3.5, len(df))  # bottom -> top range
+    out = vc.compute_valuation_clock(df)
+    # MVRV should appear as a raw column and a heat column.
+    assert "mvrv" in out and "mvrv_heat" in out
+    # Last row sits at the top of the MVRV range -> heat near 100.
+    assert out["mvrv_heat"].iloc[-1] > 95
+
+
+def test_pipeline_ignores_mvrv_when_absent():
+    df = _ramp()  # no mvrv column
+    out = vc.compute_valuation_clock(df)
+    assert "mvrv" not in out
+    assert out["valuation_heat"].dropna().between(0, 100).all()

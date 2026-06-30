@@ -32,6 +32,19 @@ CLOSE_COLUMN_CANDIDATES = [
     "btc", "btc/usd", "btcusd", "adj close",
 ]
 
+# Optional MVRV (on-chain market-value-to-realized-value ratio). Supply it
+# either way - the loader handles both:
+#   1. Add an MVRV column to your main btc_daily.xlsx (auto-detected), OR
+#   2. Point MVRV_EXCEL at a separate export; it merges onto price by date.
+# If neither is present the valuation clock just runs on the price-only
+# indicators (the combine step renormalises weights automatically).
+MVRV_COLUMN_CANDIDATES = [
+    "mvrv", "mvrv ratio", "mvrv_ratio", "capmvrvcur",
+    "market value to realized value",
+]
+MVRV_EXCEL = DATA_DIR / "mvrv.xlsx"   # set to None to disable the separate file
+MVRV_SHEET = 0
+
 # --------------------------------------------------------------------------
 # Time clock: halving dates (UTC).
 # The most recent halving <= a given date defines that date's "days since
@@ -87,6 +100,11 @@ VALUATION_INDICATORS = {
     },
     "pi_cycle_ratio": {  # 111d SMA / (2 * 350d SMA); ~1.0 flags a top
         "low": 0.5, "high": 1.0, "weight": 1.0,
+    },
+    "mvrv": {  # on-chain market cap / realized cap. <1 = bottom, >3.5 = top.
+        # Weighted heavier than the price metrics on purpose: it's the only
+        # indicator not derived from price, so it carries independent signal.
+        "low": 0.8, "high": 3.5, "weight": 1.5,
     },
 }
 
