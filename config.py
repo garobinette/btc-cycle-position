@@ -59,26 +59,55 @@ HALVINGS = [
     "2028-04-17",  # projected; update when the real date is known
 ]
 
-# Nominal cycle length in days (~4 years). Used only for the progress %.
-CYCLE_LENGTH_DAYS = 1458
+# Cycle length in days. Protocol target is 1458 (210k blocks x 10 min), but the
+# realised average halving-to-halving interval has been ~1388 days because
+# blocks arrive slightly faster than 10 min on average. Used only for the
+# progress %, so we use the empirical figure for consistency with the curve.
+CYCLE_LENGTH_DAYS = 1388
 
-# Expected-heat curve as (days_since_halving, heat 0-100) control points.
-# This encodes the historical phase shape: quiet accumulation -> bull ->
-# top window ~18-20 months -> markdown -> bottom ~32-40 months. np.interp
-# draws a smooth line through these. Tune freely.
-TIME_HEAT_CURVE = [
-    (0,    25),   # halving day, accumulation begins
-    (180,  35),   # ~6 months
-    (365,  50),   # ~12 months, bull starting
-    (480,  78),   # ~16 months
-    (550,  95),   # ~18 months, top window opens
-    (610, 100),   # ~20 months, peak zone
-    (700,  82),   # markdown underway
-    (820,  55),   # ~27 months
-    (913,  38),   # ~30 months
-    (1100, 20),   # ~36 months, bottom zone
-    (1218, 12),   # ~40 months, capitulation trough
-    (1458, 24),   # next halving approaches, re-accumulation
+# --------------------------------------------------------------------------
+# Time clock anchoring.
+# The clock stretches to fit each cycle's REALISED top rather than assuming a
+# fixed day. Pre-top phases scale to the actual halving->top span; post-top
+# phases scale to the average top->bottom span (~12-13 months). This keeps the
+# clock in phase when a cycle tops early or late (2025 topped ~534 days out,
+# well past the ~480-day average).
+# Realised cycle tops (update the last entry if a new high forms):
+CYCLE_TOPS = [
+    "2013-11-30",   # ~$1.1k
+    "2017-12-17",   # ~$19.7k
+    "2021-11-10",   # ~$69k
+    "2025-10-06",   # $124,824 (current cycle ATH)
+]
+# Fallbacks used when a cycle's top hasn't formed yet (no CYCLE_TOPS entry):
+AVG_HALVING_TO_TOP_DAYS = 480   # average halving -> top (367/526/547)
+AVG_TOP_TO_BOTTOM_DAYS = 380    # average top -> bottom (~12-13 months)
+
+# Normalised heat curves. The four canonical phases live on three legs, and the
+# cycle is bracketed by halvings on BOTH ends: halving -> top -> next halving.
+# PRE-TOP: x = fraction of the halving->top span (0 = halving, 1.0 = top).
+PRETOP_HEAT_CURVE = [
+    (0.00,  20),   # halving: accumulation
+    (0.30,  32),   # accumulation
+    (0.55,  50),   # expansion begins
+    (0.80,  72),   # expansion
+    (0.92,  90),   # euphoria
+    (1.00, 100),   # the top
+]
+# CORRECTION: x = fraction of the top->bottom span (0 = top, 1.0 = bottom).
+# Bottom is derived as top + AVG_TOP_TO_BOTTOM_DAYS.
+CORRECTION_HEAT_CURVE = [
+    (0.00, 100),   # the top
+    (0.50,  45),   # correction underway
+    (0.80,  20),   # approaching the bottom
+    (1.00,  10),   # the bottom
+]
+# RE-ACCUMULATION: x = fraction of the bottom->next-halving span (0 = bottom,
+# 1.0 = next halving). This is the leg that re-anchors the tail to the halving.
+REACCUM_HEAT_CURVE = [
+    (0.00, 10),    # the bottom
+    (0.40, 18),    # recovery / accumulation
+    (1.00, 24),    # next halving: the cycle closes where it began
 ]
 
 # --------------------------------------------------------------------------

@@ -3,9 +3,16 @@
 Estimates where Bitcoin sits in its ~4-year halving cycle by combining two
 *independent clocks* into a single 0–100 **cycle-position score**.
 
-- **Time clock** — calendar only. Days since the most recent halving, mapped
-  onto an expected-heat curve that encodes the historical phase shape
-  (accumulation → bull → top window → markdown → bottom).
+- **Time clock** — calendar only, in four canonical phases across three legs
+  bracketed by halvings on both ends: **Accumulation → Expansion → Euphoria**
+  (halving → top), **Correction** (top → bottom), then **Accumulation** again
+  (bottom → next halving). It anchors on three events — the most recent halving,
+  that cycle's *realised* top (`CYCLE_TOPS` in config), and the next halving —
+  and stretches each leg to fit. Anchoring to the realised top keeps it in
+  phase when a cycle tops early or late (2025 topped ~534 days out, past the
+  ~480-day average); bracketing the tail to the next halving ties the
+  re-accumulation leg back to the 4-year rhythm rather than letting it drift.
+  The bottom is derived as top + the average top→bottom span (~12–13 months).
 - **Valuation clock** — how stretched price is. Five indicators: four derived
   from price (Mayer Multiple, drawdown from ATH, 200-week SMA ratio, Pi Cycle
   ratio) plus **MVRV** (on-chain market-value-to-realized-value), each
@@ -131,5 +138,11 @@ btc-cycle-position/
 ```
 
 > Not investment advice. Cycle position is a probabilistic reference, not a
-> timing signal — and the 4-year cycle itself is increasingly debated as ETFs
-> and corporate treasuries reshape demand.
+> timing signal. The time clock anchors to each cycle's realised top, which
+> keeps it in phase, but it is still shaped by only three completed cycles and
+> assumes a top→bottom span (~12–13 months) that may not repeat. A time curve
+> also can't see *amplitude* — the 2025 top was the calmest on record even
+> though its timing was textbook — so the valuation/on-chain clock is the more
+> robust half. The 4-year cycle itself is increasingly debated as ETFs and
+> corporate treasuries reshape demand. Treat the score as one input, not an
+> oracle.
